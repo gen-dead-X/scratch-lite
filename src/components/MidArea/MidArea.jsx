@@ -1,8 +1,14 @@
-import { useAnimationContext } from "../../context/AnimationContext";
+import { useAnimationContext } from "../../context/useAnimationContext";
 import { Droppable } from "react-beautiful-dnd";
+import Animation from "../Animation/Animation";
+import { useEffect } from "react";
 
 export default function MidArea() {
-  const { selectedSpriteId, addAnimationToCharacter } = useAnimationContext();
+  const { midAreaAnimations } = useAnimationContext();
+
+  useEffect(() => {
+    console.log({ animationDropped: midAreaAnimations });
+  }, [midAreaAnimations]);
 
   return (
     <Droppable
@@ -17,7 +23,9 @@ export default function MidArea() {
           {...provided.droppableProps}
           className="flex-1 h-full overflow-auto bg-gray-100 p-4"
         >
-          <div className="text-gray-500">Drop animations here</div>
+          {midAreaAnimations?.map((animation, index) => (
+            <Animation key={animation.id} animation={animation} index={index} />
+          ))}
           {provided.placeholder}
         </div>
       )}

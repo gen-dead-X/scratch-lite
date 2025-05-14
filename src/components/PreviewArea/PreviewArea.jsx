@@ -1,5 +1,5 @@
 import CatSprite from "../CatSprite/CatSprite";
-import { useAnimationContext } from "../../context/AnimationContext";
+import { useAnimationContext } from "../../context/useAnimationContext";
 
 export default function PreviewArea() {
   const { selectedSpriteId, addAnimationToCharacter } = useAnimationContext();
