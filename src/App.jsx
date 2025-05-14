@@ -11,9 +11,9 @@ export default function App() {
   const handleDragEnd = (result) => {
     const { source, destination, draggableId } = result;
 
-    if (!destination) return; // If dropped outside a droppable area, do nothing
+    if (!destination) return;
 
-    const animation = JSON.parse(draggableId); // Parse the animation data
+    const animation = JSON.parse(draggableId);
 
     moveAnimation(source.droppableId, destination.droppableId, animation);
   };

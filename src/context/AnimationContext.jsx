@@ -53,20 +53,23 @@ export function AnimationProvider({ children }) {
     }
   };
 
+  const contextValue = React.useMemo(
+    () => ({
+      characters,
+      selectedSpriteId,
+      selectSprite,
+      addCharacter,
+      addAnimationToCharacter,
+      getAnimationsForSprite,
+      sidebarAnimations,
+      midAreaAnimations,
+      moveAnimation,
+    }),
+    [characters, selectedSpriteId, sidebarAnimations, midAreaAnimations]
+  );
+
   return (
-    <AnimationContext.Provider
-      value={{
-        characters,
-        selectedSpriteId,
-        selectSprite,
-        addCharacter,
-        addAnimationToCharacter,
-        getAnimationsForSprite,
-        sidebarAnimations,
-        midAreaAnimations,
-        moveAnimation,
-      }}
-    >
+    <AnimationContext.Provider value={contextValue}>
       {children}
     </AnimationContext.Provider>
   );

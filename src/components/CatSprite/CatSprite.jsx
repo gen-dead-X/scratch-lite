@@ -1,6 +1,7 @@
 import React from "react";
+import PropTypes from "prop-types";
 
-export default function CatSprite() {
+export default function CatSprite({ x = 0, y = 0, rotation = 0 }) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -9,6 +10,13 @@ export default function CatSprite() {
       viewBox="0.3210171699523926 0.3000000357627869 95.17898101806641 100.04156036376953"
       version="1.1"
       xmlSpace="preserve"
+      style={{
+        position: "absolute",
+        left: `${x}px`,
+        top: `${y}px`,
+        transform: `rotate(${rotation}deg)`,
+        transformOrigin: "center center",
+      }}
     >
       <g>
         <g id="Page-1" stroke="none" fillRule="evenodd">
@@ -182,3 +190,9 @@ export default function CatSprite() {
     </svg>
   );
 }
+
+CatSprite.propTypes = {
+  x: PropTypes.number,
+  y: PropTypes.number,
+  rotation: PropTypes.number,
+};
