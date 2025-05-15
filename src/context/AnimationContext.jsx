@@ -1,6 +1,8 @@
 import React, { createContext, useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { v4 as uuidv4 } from "uuid";
+import { playCollisionSound } from "../utils/soundEffects";
+import { trackAnimationExchange } from "../utils/statsTracking";
 
 const AnimationContext = createContext();
 
@@ -13,6 +15,16 @@ const DEFAULT_ANIMATIONS = [
     label: "Repeat 10 times",
     action: { type: "repeat", count: 10 },
   },
+  {
+    id: "5",
+    label: "Say hello for 5 seconds",
+    action: { type: "say", text: "Hello!", duration: 5000 },
+  },
+  {
+    id: "6",
+    label: "Think for 5 seconds",
+    action: { type: "think", text: "Hmm...", duration: 5000 },
+  },
 ];
 
 export function AnimationProvider({ children }) {
@@ -22,6 +34,9 @@ export function AnimationProvider({ children }) {
   const [selectedSpriteId, setSelectedSpriteId] = useState(null);
   const [sidebarAnimations] = useState([...DEFAULT_ANIMATIONS]);
   const [spriteAnimations, setSpriteAnimations] = useState([]);
+  const [collisionDetected, setCollisionDetected] = useState(false);
+  const [heroEffect, setHeroEffect] = useState(false);
+  const [collisionCount, setCollisionCount] = useState(0);
 
   useEffect(() => {
     if (sprites.length > 0 && !selectedSpriteId) {
@@ -71,10 +86,8 @@ export function AnimationProvider({ children }) {
 
   const moveAnimation = (source, destination, animation) => {
     if (source === "sidebar" && destination === "midArea" && selectedSpriteId) {
-      // Clone the animation with a new ID to avoid conflicts but keep original sidebar animations
       const newAnimation = { ...animation, id: uuidv4() };
 
-      // Add animation to the selected sprite
       setSprites((prev) =>
         prev.map((sprite) =>
           sprite.id === selectedSpriteId
@@ -83,14 +96,12 @@ export function AnimationProvider({ children }) {
         )
       );
 
-      // Update current sprite animations view
       setSpriteAnimations((prev) => [...prev, newAnimation]);
     } else if (
       source === "midArea" &&
       destination === "sidebar" &&
       selectedSpriteId
     ) {
-      // Remove animation from the selected sprite
       setSprites((prev) =>
         prev.map((sprite) =>
           sprite.id === selectedSpriteId
@@ -104,7 +115,6 @@ export function AnimationProvider({ children }) {
         )
       );
 
-      // Update current sprite animations view
       setSpriteAnimations((prev) =>
         prev.filter((anim) => anim.id !== animation.id)
       );
@@ -120,6 +130,9 @@ export function AnimationProvider({ children }) {
         rotation: 0,
       }))
     );
+
+    setCollisionDetected(false);
+    setHeroEffect(false);
   };
 
   const updateSpriteState = (id, newState) => {
@@ -133,7 +146,6 @@ export function AnimationProvider({ children }) {
   const removeSprite = (id) => {
     setSprites((prev) => prev.filter((sprite) => sprite.id !== id));
 
-    // If we're removing the currently selected sprite, select another one if available
     if (id === selectedSpriteId) {
       const remainingSprites = sprites.filter((sprite) => sprite.id !== id);
       if (remainingSprites.length > 0) {
@@ -142,6 +154,68 @@ export function AnimationProvider({ children }) {
         setSelectedSpriteId(null);
       }
     }
+  };
+
+  const checkCollision = () => {
+    if (sprites.length === 2) {
+      const sprite1 = sprites[0];
+      const sprite2 = sprites[1];
+
+      const spriteWidth = 95;
+      const spriteHeight = 100;
+
+      const isColliding =
+        sprite1.x < sprite2.x + spriteWidth &&
+        sprite1.x + spriteWidth > sprite2.x &&
+        sprite1.y < sprite2.y + spriteHeight &&
+        sprite1.y + spriteHeight > sprite2.y;
+
+      if (isColliding && !collisionDetected) {
+        setCollisionDetected(true);
+        setHeroEffect(true);
+        setCollisionCount((prev) => prev + 1);
+
+        setSprites((prev) => {
+          const updatedSprites = [...prev];
+          if (updatedSprites.length === 2) {
+            const sprite1Animations = [...updatedSprites[0].animations];
+            const sprite2Animations = [...updatedSprites[1].animations];
+
+            updatedSprites[0].animations = sprite2Animations.map((anim) => ({
+              ...anim,
+              id: uuidv4(),
+            }));
+
+            updatedSprites[1].animations = sprite1Animations.map((anim) => ({
+              ...anim,
+              id: uuidv4(),
+            }));
+
+            trackAnimationExchange();
+          }
+          return updatedSprites;
+        });
+
+        if (window.navigator && window.navigator.vibrate) {
+          window.navigator.vibrate([100, 50, 200]);
+        }
+
+        playCollisionSound();
+
+        setTimeout(() => {
+          setHeroEffect(false);
+        }, 3000);
+
+        setTimeout(() => {
+          setCollisionDetected(false);
+        }, 5000);
+      } else if (!isColliding && collisionDetected) {
+      }
+
+      return isColliding;
+    }
+
+    return false;
   };
 
   const contextValue = React.useMemo(
@@ -157,6 +231,10 @@ export function AnimationProvider({ children }) {
       spriteAnimations,
       moveAnimation,
       updateSpriteState,
+      collisionDetected,
+      heroEffect,
+      collisionCount,
+      checkCollision,
     }),
     [
       sprites,
@@ -166,6 +244,10 @@ export function AnimationProvider({ children }) {
       moveAnimation,
       removeSprite,
       resetSpriteAnimations,
+      collisionDetected,
+      heroEffect,
+      collisionCount,
+      checkCollision,
     ]
   );
 

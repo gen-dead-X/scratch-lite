@@ -1,15 +1,28 @@
 import { useAnimationContext } from "../../context/useAnimationContext";
 import { Droppable } from "react-beautiful-dnd";
 import Animation from "../Animation/Animation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export default function MidArea() {
-  const { spriteAnimations, selectedSpriteId, resetSpriteAnimations } =
-    useAnimationContext();
+  const {
+    spriteAnimations,
+    selectedSpriteId,
+    resetSpriteAnimations,
+    collisionDetected,
+  } = useAnimationContext();
+  const [flashAnimation, setFlashAnimation] = useState(false);
 
   useEffect(() => {
     console.log({ selectedSpriteId, animationCount: spriteAnimations.length });
   }, [spriteAnimations, selectedSpriteId]);
+
+  useEffect(() => {
+    if (collisionDetected) {
+      setFlashAnimation(true);
+      const timer = setTimeout(() => setFlashAnimation(false), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [collisionDetected]);
 
   return (
     <div className="flex-1 h-full overflow-auto flex flex-col">
@@ -34,7 +47,11 @@ export default function MidArea() {
           <div
             ref={provided.innerRef}
             {...provided.droppableProps}
-            className="flex-1 overflow-auto bg-gray-100 p-4"
+            className={`flex-1 overflow-auto bg-gray-100 p-4 ${
+              flashAnimation
+                ? "bg-yellow-200 transition-colors duration-300"
+                : ""
+            }`}
           >
             {selectedSpriteId ? (
               spriteAnimations?.length > 0 ? (
@@ -42,6 +59,11 @@ export default function MidArea() {
                   <div className="text-xs text-gray-500 mb-2">
                     Drag animations back to the left panel to remove them.
                   </div>
+                  {flashAnimation && (
+                    <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-2 mb-3 rounded animate-pulse">
+                      Animations swapped with other sprite!
+                    </div>
+                  )}
                   {spriteAnimations.map((animation, index) => (
                     <Animation
                       key={animation.id}
