@@ -2,16 +2,18 @@ import Sidebar from "./components/Sidebar/Sidebar";
 import MidArea from "./components/MidArea/MidArea";
 import PreviewArea from "./components/PreviewArea/PreviewArea";
 
+import "./App.css";
+
 import { DragDropContext } from "react-beautiful-dnd";
 import { useAnimationContext } from "./context/useAnimationContext";
 
 export default function App() {
-  const { moveAnimation } = useAnimationContext();
+  const { moveAnimation, selectedSpriteId } = useAnimationContext();
 
   const handleDragEnd = (result) => {
     const { source, destination, draggableId } = result;
 
-    if (!destination) return;
+    if (!destination || !selectedSpriteId) return;
 
     const animation = JSON.parse(draggableId);
 
