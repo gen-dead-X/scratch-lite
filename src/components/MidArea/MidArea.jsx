@@ -37,13 +37,25 @@ export default function MidArea() {
             className="flex-1 overflow-auto bg-gray-100 p-4"
           >
             {selectedSpriteId ? (
-              spriteAnimations?.map((animation, index) => (
-                <Animation
-                  key={animation.id}
-                  animation={animation}
-                  index={index}
-                />
-              ))
+              spriteAnimations?.length > 0 ? (
+                <>
+                  <div className="text-xs text-gray-500 mb-2">
+                    Drag animations back to the left panel to remove them.
+                  </div>
+                  {spriteAnimations.map((animation, index) => (
+                    <Animation
+                      key={animation.id}
+                      animation={animation}
+                      index={index}
+                    />
+                  ))}
+                </>
+              ) : (
+                <div className="text-center text-gray-500 mt-4">
+                  Drag animations from the left panel to add them to this
+                  sprite.
+                </div>
+              )
             ) : (
               <div className="text-center text-gray-500 mt-4">
                 Please select a sprite to add animations

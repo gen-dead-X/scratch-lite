@@ -71,8 +71,10 @@ export function AnimationProvider({ children }) {
 
   const moveAnimation = (source, destination, animation) => {
     if (source === "sidebar" && destination === "midArea" && selectedSpriteId) {
+      // Clone the animation with a new ID to avoid conflicts but keep original sidebar animations
       const newAnimation = { ...animation, id: uuidv4() };
 
+      // Add animation to the selected sprite
       setSprites((prev) =>
         prev.map((sprite) =>
           sprite.id === selectedSpriteId
@@ -81,12 +83,14 @@ export function AnimationProvider({ children }) {
         )
       );
 
+      // Update current sprite animations view
       setSpriteAnimations((prev) => [...prev, newAnimation]);
     } else if (
       source === "midArea" &&
       destination === "sidebar" &&
       selectedSpriteId
     ) {
+      // Remove animation from the selected sprite
       setSprites((prev) =>
         prev.map((sprite) =>
           sprite.id === selectedSpriteId
@@ -100,6 +104,7 @@ export function AnimationProvider({ children }) {
         )
       );
 
+      // Update current sprite animations view
       setSpriteAnimations((prev) =>
         prev.filter((anim) => anim.id !== animation.id)
       );
@@ -125,12 +130,27 @@ export function AnimationProvider({ children }) {
     );
   };
 
+  const removeSprite = (id) => {
+    setSprites((prev) => prev.filter((sprite) => sprite.id !== id));
+
+    // If we're removing the currently selected sprite, select another one if available
+    if (id === selectedSpriteId) {
+      const remainingSprites = sprites.filter((sprite) => sprite.id !== id);
+      if (remainingSprites.length > 0) {
+        setSelectedSpriteId(remainingSprites[0].id);
+      } else {
+        setSelectedSpriteId(null);
+      }
+    }
+  };
+
   const contextValue = React.useMemo(
     () => ({
       sprites,
       selectedSpriteId,
       selectSprite,
       addSprite,
+      removeSprite,
       resetSpriteAnimations,
       resetAllSprites,
       sidebarAnimations,
@@ -138,7 +158,15 @@ export function AnimationProvider({ children }) {
       moveAnimation,
       updateSpriteState,
     }),
-    [sprites, selectedSpriteId, sidebarAnimations, spriteAnimations]
+    [
+      sprites,
+      selectedSpriteId,
+      sidebarAnimations,
+      spriteAnimations,
+      moveAnimation,
+      removeSprite,
+      resetSpriteAnimations,
+    ]
   );
 
   return (
