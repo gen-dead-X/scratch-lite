@@ -1,5 +1,4 @@
 import React, { createContext, useState, useEffect } from "react";
-import PropTypes from "prop-types";
 import { v4 as uuidv4 } from "uuid";
 import { playCollisionSound } from "../utils/soundEffects";
 import { trackAnimationExchange } from "../utils/statsTracking";
@@ -257,9 +256,5 @@ export function AnimationProvider({ children }) {
     </AnimationContext.Provider>
   );
 }
-
-AnimationProvider.propTypes = {
-  children: PropTypes.node.isRequired,
-};
 
 export { AnimationContext };

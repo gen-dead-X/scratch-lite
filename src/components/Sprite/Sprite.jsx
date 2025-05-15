@@ -1,5 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from "react";
-import PropTypes from "prop-types";
+import { useState, useRef, useEffect, useCallback } from "react";
 import CatSprite from "../CatSprite/CatSprite";
 import CatSpriteGreen from "../CatSpriteGreen/CatSpriteGreen";
 import CatSpriteBlue from "../CatSpriteBlue/CatSpriteBlue";
@@ -235,19 +234,3 @@ export default function Sprite({ sprite }) {
     </div>
   );
 }
-
-Sprite.propTypes = {
-  sprite: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    type: PropTypes.oneOf(["cat", "green-cat", "blue-cat"]).isRequired,
-    x: PropTypes.number,
-    y: PropTypes.number,
-    rotation: PropTypes.number,
-    speech: PropTypes.shape({
-      text: PropTypes.string.isRequired,
-    }),
-    thought: PropTypes.shape({
-      text: PropTypes.string.isRequired,
-    }),
-  }).isRequired,
-};

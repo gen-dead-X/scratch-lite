@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import PropTypes from "prop-types";
 
 const HERO_TEXTS = [
   "HERO",
@@ -70,10 +69,6 @@ const HeroEffect = ({ show }) => {
       </div>
     </div>
   );
-};
-
-HeroEffect.propTypes = {
-  show: PropTypes.bool.isRequired,
 };
 
 export default HeroEffect;

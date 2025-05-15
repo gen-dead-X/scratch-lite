@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Sprite from "../Sprite/Sprite";
+import SpriteSelector from "../SpriteSelector/SpriteSelector";
 import { useAnimationContext } from "../../context/useAnimationContext";
 import HeroEffect from "../HeroEffect/HeroEffect";
 import { trackAnimation } from "../../utils/statsTracking";
@@ -365,39 +366,13 @@ export default function PreviewArea() {
 
       <div className="flex mb-4 flex-wrap gap-2">
         {sprites.map((sprite) => (
-          <div key={sprite.id} className="flex items-center">
-            <button
-              className={`py-1 px-3 rounded transition-all duration-200 transform hover:scale-105 ${
-                selectedSpriteId === sprite.id
-                  ? "bg-blue-600 text-white shadow-md"
-                  : "bg-gray-200 hover:bg-gray-300"
-              }`}
-              onClick={() => selectSprite(sprite.id)}
-            >
-              {sprite.type
-                .replace("-", " ")
-                .replace(/(^\w{1})|(\s+\w{1})/g, (letter) =>
-                  letter.toUpperCase()
-                )}
-              {selectedSpriteId === sprite.id && (
-                <span className="ml-2 text-xs opacity-75">
-                  x:{Math.round(sprite.x)},y:{Math.round(sprite.y)}
-                </span>
-              )}
-              {sprite.animations.length > 0 && (
-                <span className="ml-1 bg-green-500 text-white text-xs px-1 rounded-full">
-                  {sprite.animations.length}
-                </span>
-              )}
-            </button>
-            <button
-              className="ml-1 bg-red-500 hover:bg-red-700 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs"
-              onClick={() => handleRemoveSprite(sprite.id)}
-              title="Remove sprite"
-            >
-              ×
-            </button>
-          </div>
+          <SpriteSelector
+            key={sprite.id}
+            sprite={sprite}
+            isSelected={selectedSpriteId === sprite.id}
+            onSelect={() => selectSprite(sprite.id)}
+            onRemove={() => handleRemoveSprite(sprite.id)}
+          />
         ))}
       </div>
 

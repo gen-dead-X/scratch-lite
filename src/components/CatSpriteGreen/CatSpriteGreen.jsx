@@ -1,5 +1,4 @@
 import React from "react";
-import PropTypes from "prop-types";
 
 export default function CatSpriteGreen({ x = 0, y = 0, rotation = 0 }) {
   return (
@@ -190,9 +189,3 @@ export default function CatSpriteGreen({ x = 0, y = 0, rotation = 0 }) {
     </svg>
   );
 }
-
-CatSpriteGreen.propTypes = {
-  x: PropTypes.number,
-  y: PropTypes.number,
-  rotation: PropTypes.number,
-};
